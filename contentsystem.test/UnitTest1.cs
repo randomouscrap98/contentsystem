@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace contentsystem.test
+namespace Randomous.ContentSystem.test
 {
     public class UnitTest1
     {

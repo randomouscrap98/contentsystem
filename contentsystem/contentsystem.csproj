@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Randomous.ContentSystem</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>randomous</Authors>
+    <Company>thereisnocompany</Company>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
