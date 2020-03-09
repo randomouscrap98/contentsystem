@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Randomous.ContentSystem
 {
     //This ABSOLUTELY maps to search base because ALL "new" content objects SHOULD map directly to some entity system object.
-    public class BaseSearch //: EntitySystem.EntitySearchBase
+    public class BaseSearch
     {
         public List<long> Ids = new List<long>();
         public DateTime CreateStart = new DateTime(0);

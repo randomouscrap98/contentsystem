@@ -50,33 +50,5 @@ namespace Randomous.ContentSystem
                 { SystemType.Content,   "st:p" },       //p for post
             };
         }
-
-        //public Dictionary<Identifier, string> IDKeys = new Dictionary<Identifier, string>()
-        //{
-        //};
-        
-        //public Dictionary<SystemType, string> SystemKeys = new Dictionary<SystemType, string>()
-        //{
-        //};
-
-        //public string GetKeyGeneric<T>(Dictionary<T,string> dic, T id)
-        //{
-        //    if(!dic.ContainsKey(id))
-        //        throw new InvalidOperationException($"No key for identifier {id}");
-
-        //    return dic[id];
-        //}
-
-        //public string GetKey(Enum id)
-        //{
-        //    if(id is Identifier)
-        //        return GetKeyGeneric(IDKeys, (Identifier)id);
-        //    else if (id is Action)
-        //        return GetKeyGeneric(ActionKeys, (Action)id);
-        //    else if (id is SystemType)
-        //        return GetKeyGeneric(SystemKeys, (SystemType)id);
-        //    
-        //    throw new InvalidOperationException($"Unsupported enumerator {id.GetType()}");
-        //}
     }
 }
