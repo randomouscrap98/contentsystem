@@ -6,6 +6,7 @@ namespace Randomous.ContentSystem
     [Flags]
     public enum Action
     {
+        None = 0,
         Create = 1,
         Read = 2,
         Update = 4,
