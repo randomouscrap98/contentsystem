@@ -3,12 +3,12 @@ using Xunit;
 
 namespace Randomous.ContentSystem.test
 {
-    public class UnitTest1
+    public class UserProviderTest : UnitTestBase
     {
         [Fact]
-        public void Test1()
+        public void SimpleEmpty()
         {
-
+            //Can it even get started???
         }
     }
 }
