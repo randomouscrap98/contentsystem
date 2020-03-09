@@ -10,7 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Randomous.EntitySystem" Version="1.0.3" />
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="Randomous.EntitySystem" Version="1.0.4" />
   </ItemGroup>
 
 </Project>
