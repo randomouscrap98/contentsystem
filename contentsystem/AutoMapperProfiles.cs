@@ -7,8 +7,34 @@ namespace Randomous.ContentSystem
     {
         public SearchProfile()
         {
-            CreateMap<UserSearch, EntitySearch>()
-                .ForMember(d => d.NameLike, o => o.MapFrom(s => s.UsernameLike))
+            //Always map forward/up. 
+
+            //Copy constructors essentially
+            CreateMap<EntitySearchBase, EntitySearch>()
+                .ReverseMap();
+            CreateMap<EntitySearchBase, EntityValueSearch>()
+                .ReverseMap();
+            CreateMap<EntitySearchBase, EntityRelationSearch>()
+                .ReverseMap();
+
+            CreateMap<EntitySearch, UserSearch>()
+                .ForMember(d => d.UsernameLike, o => o.MapFrom(s => s.NameLike))
+                .ReverseMap();
+            CreateMap<EntityRelationSearch, PermissionSearch>()
+                .ReverseMap();
+        }
+    }
+
+    public class ContentProfile : Profile
+    {
+        public ContentProfile()
+        {
+            //Copy constructors essentially
+            CreateMap<BasicUser, User>()
+                .ReverseMap();
+
+            CreateMap<Entity, BasicUser>()
+                .ForMember(d => d.username, o => o.MapFrom(s => s.name))
                 .ReverseMap();
         }
     }
