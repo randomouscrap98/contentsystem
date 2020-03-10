@@ -10,35 +10,21 @@ using Xunit;
 
 namespace Randomous.ContentSystem.test
 {
-    public class UnitTestBase : IDisposable
+    public class UnitTestBase
     {
-        public List<SqliteConnection> connections = new List<SqliteConnection>();
-        public string SqliteConnectionString = "Data Source=:memory:;";
-
-        public void Dispose()
-        {
-            foreach(var con in connections)
-            {
-                try { con.Close(); }
-                catch(Exception) { }
-            }
-        }
-
         public IServiceCollection CreateServices()
         {
-            //Whhyyyy am I doing it like this.
-            var connection = new SqliteConnection(SqliteConnectionString);
-            connection.Open();
-            connections.Append(connection);
-
             var services = new ServiceCollection();
+            var identifiers = new IdentifierKeys();
+            var mapperConfig = new AutoMapper.MapperConfiguration((cfg) => 
+            {
+                cfg.AddProfile<SearchProfile>();
+                cfg.AddProfile<ContentProfile>();
+            });
             services.AddLogging(configure => configure.AddSerilog(new LoggerConfiguration().WriteTo.File($"{GetType()}.txt").CreateLogger()));
-            services.AddTransient<IEntitySearcher, EntitySearcher>();
-            services.AddTransient<IEntityProvider, EntityProviderEfCore>();
-            services.AddDbContext<BaseEntityContext>(options => options.UseSqlite(connection).EnableSensitiveDataLogging(true));
-            services.AddScoped<DbContext, BaseEntityContext>();
-            services.AddSingleton(new EntityProviderEfCoreConfig());
-            services.AddTransient<ISignaler<EntityBase>, SignalSystem<EntityBase>>();
+            services.AddTransient<IEntityProvider, EntityProviderMemory>();
+            services.AddSingleton(identifiers.GetKeys());
+            services.AddSingleton(mapperConfig.CreateMapper());
             return services;
         }
 
@@ -52,7 +38,7 @@ namespace Randomous.ContentSystem.test
         [Fact]
         public void TestCreateService()
         {
-            var provider = CreateService<EntityProviderEfCore>();
+            var provider = CreateService<UserProvider>();
             Assert.NotNull(provider);
         }
 
