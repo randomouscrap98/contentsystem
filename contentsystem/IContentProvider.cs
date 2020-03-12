@@ -6,7 +6,7 @@ namespace Randomous.ContentSystem
     public interface IContentProvider<T,B,S> where T : BaseSystemObject where B : BaseSystemObject where S : BaseSearch
     {
         Task<List<B>> GetBasicAsync(S search);
-        Task WriteAsync(IEnumerable<T> items);
+        Task WriteAsync(IEnumerable<T> items, bool writeIds = true);
 
         /// <summary>
         /// Expand basic items into more complex ones (only do this when necessary!)

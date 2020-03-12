@@ -30,15 +30,11 @@ namespace Randomous.ContentSystem
                 EntityIds = items.Select(x => x.id).ToList()
             });
 
-            var result = new Dictionary<long, List<EntityValue>>();
+            var result = items.Where(x => x.id != 0).ToDictionary(x => x.id, y => new List<EntityValue>()); //new Dictionary<long, List<EntityValue>>();
+            result.Add(0, new List<EntityValue>());
 
             foreach(var value in values)
-            {
-                if(!result.ContainsKey(value.entityId))
-                    result.Add(value.entityId, new List<EntityValue>());
-                
                 result[value.entityId].Add(value);
-            }
 
             return result;
         }

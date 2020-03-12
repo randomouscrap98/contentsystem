@@ -33,15 +33,23 @@ namespace Randomous.ContentSystem
         {
             var entitySearch = mapper.Map<EntitySearch>(search);
             entitySearch.TypeLike = keys[SystemType.User];
+
+            if(!string.IsNullOrEmpty(search.EmailLike))
+            {
+                var valueSearch = new EntityValueSearch() { KeyLike = keys[Identifier.Email], ValueLike = search.EmailLike };
+                var emailUsers = await provider.GetEntityValuesAsync(valueSearch);
+                entitySearch.Ids.AddRange(emailUsers.Select(x => x.entityId));
+            }
+
             var results = await provider.GetEntitiesAsync(entitySearch);
             return results.Select(x => mapper.Map<BasicUser>(x)).ToList();
         }
 
-        public async Task WriteAsync(IEnumerable<User> items)
+        public async Task WriteAsync(IEnumerable<User> items, bool writeIds = true)
         {
             var values = await GetSortedValues(items); //Get the OLD values.
             var storeValues = new List<EntityValue>();
-            var storeUsers = new List<Entity>();
+            var storeUsers = new List<Tuple<User, Entity>>();
 
             foreach(var user in items)
             {
@@ -54,10 +62,16 @@ namespace Randomous.ContentSystem
                 password .value = user.passwordHash;
                 storeValues.Add(password);
 
-                storeUsers.Add(mapper.Map<Entity>(user));
+                var entity = mapper.Map<Entity>(user);
+                entity.type = keys[SystemType.User];
+                storeUsers.Add(Tuple.Create(user, entity));
             }
 
-            await provider.WriteAsync(storeUsers);
+            await provider.WriteAsync(storeUsers.Select(x => x.Item2));
+
+            if(writeIds)
+                storeUsers.ForEach(x => x.Item1.id = x.Item2.id);
+
             await provider.WriteAsync(storeValues);
         }
     }

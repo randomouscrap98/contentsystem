@@ -32,7 +32,7 @@ namespace Randomous.ContentSystem.test
         {
             var services = CreateServices();
             var provider = services.BuildServiceProvider();
-            return (T)ActivatorUtilities.CreateInstance(provider, typeof(T));
+            return (T)ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(T));
         }
 
         [Fact]
