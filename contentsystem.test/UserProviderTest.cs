@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Xunit;
@@ -10,14 +11,30 @@ namespace Randomous.ContentSystem.test
         protected UserProvider provider;
         protected IMapper mapper;
         
-        public User GetBasicUser()
+        public User MakeBasicUser()
         {
             return new User()
             {
+                createDate = DateTime.Now,
                 username = DateTime.Now.Ticks.ToString(),
                 email = $"thing{DateTime.Now.Ticks}@something.com",
                 passwordHash = $"apasswordhash_{DateTime.Now.Ticks}"
             };
+        }
+
+        public List<User> MakeManyUsers(int count = 100)
+        {
+            var users = new List<User>();
+
+            for(int i = 0; i < count; i++)
+            {
+                var user = MakeBasicUser();
+                user.username += (char)('a' + (i % 26));
+                user.email = (char)('a' + (i % 26)) + user.email;
+                users.Add(user);
+            }
+
+            return users;
         }
 
         public UserProviderTest()
@@ -37,13 +54,13 @@ namespace Randomous.ContentSystem.test
         [Fact]
         public void SimpleWrite()
         {
-            provider.WriteAsync(new [] {GetBasicUser()}).Wait();
+            provider.WriteAsync(new [] {MakeBasicUser()}).Wait();
         }
 
         [Fact]
         public void ReadWrite()
         {
-            var user = GetBasicUser();
+            var user = MakeBasicUser();
             provider.WriteAsync(new [] {user}).Wait();
             var result = provider.GetBasicAsync(new UserSearch()).Result;
             Assert.Single(result);
@@ -53,12 +70,12 @@ namespace Randomous.ContentSystem.test
         [Fact]
         public void ReadWriteID()
         {
-            var user = GetBasicUser();
+            var user = MakeBasicUser();
             provider.WriteAsync(new [] {user}, false).Wait();
             var result = provider.GetBasicAsync(new UserSearch()).Result;
             Assert.Equal(0, user.id); //ID should still be 0 with a false.
 
-            user = GetBasicUser();
+            user = MakeBasicUser();
             provider.WriteAsync(new [] {user}, true).Wait(); //Now actually put the id
             Assert.True(user.id > 0); //user ID should be nonzero
         }
@@ -66,8 +83,7 @@ namespace Randomous.ContentSystem.test
         [Fact]
         public void MultiWriteOrdered()
         {
-            const int count = 100;
-            var users = Enumerable.Repeat(0, count).Select(x => GetBasicUser()).ToList(); //Lazy evaluation is funny
+            var users = MakeManyUsers();
             provider.WriteAsync(users).Wait();
             var result = provider.GetBasicAsync(new UserSearch()).Result;
             Assert.Equal(result.Count(), users.Count());
@@ -87,8 +103,7 @@ namespace Randomous.ContentSystem.test
         [Fact]
         public void MultiWriteCastEqual()
         {
-            const int count = 100;
-            var users = Enumerable.Repeat(0, count).Select(x => GetBasicUser()).ToList();
+            var users = MakeManyUsers();
             provider.WriteAsync(users).Wait();
             var result = provider.GetBasicAsync(new UserSearch()).Result;
             var basicUsers = users.Select(x => mapper.Map<BasicUser>(x));
@@ -99,15 +114,78 @@ namespace Randomous.ContentSystem.test
         [Fact]
         public void SimpleExpand()
         {
-            var user = GetBasicUser();
+            var user = MakeBasicUser();
             provider.WriteAsync(new [] {user}).Wait();
             var result = provider.GetBasicAsync(new UserSearch()).Result;
             Assert.Single(result);
             var super = provider.ExpandAsync(result).Result;
             Assert.Equal(user, super.First()); //EVERYTHING, including email, should be the same.
-            //The above should've checked this but I WANT TO MAKE SURE
-            Assert.Equal(user.email, super.First().email);
-            Assert.Equal(user.passwordHash, super.First().passwordHash);
+        }
+
+        [Fact]
+        public void MultiExpand()
+        {
+            var users = MakeManyUsers();
+            provider.WriteAsync(users).Wait();
+            var result = provider.GetBasicAsync(new UserSearch()).Result;
+            var superResult = provider.ExpandAsync(result).Result;
+
+            AssertResultsEqual(users, superResult);
+        }
+
+        [Fact]
+        public void SimpleIdSearch()
+        {
+            var users = MakeManyUsers();
+            provider.WriteAsync(users).Wait();
+
+            var search = new UserSearch();
+            search.Ids.AddRange(new long[] {1,2,3,4,5,6,7,8,9,10});
+
+            var result = provider.GetBasicAsync(search).Result;
+
+            Assert.Equal(10, result.Count());
+
+            for(int i = 0; i < 10; i++)
+                Assert.Equal(i + 1, result.ElementAt(i).id);
+        }
+            
+        [Fact]
+        public void SimpleUsernameSearch()
+        {
+            var users = MakeManyUsers();
+            provider.WriteAsync(users).Wait();
+
+            var search = new UserSearch() { UsernameLike = "%a" };
+            var result = provider.GetBasicAsync(search).Result;
+            Assert.True(result.Count() > 0 && result.Count() < users.Count);
+
+            search.UsernameLike = "%b";
+            result = provider.GetBasicAsync(search).Result;
+            Assert.True(result.Count() > 0 && result.Count() < users.Count);
+
+            search.UsernameLike = "nothing";
+            result = provider.GetBasicAsync(search).Result;
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void SimpleEmailSearch()
+        {
+            var users = MakeManyUsers();
+            provider.WriteAsync(users).Wait();
+
+            var search = new UserSearch() { EmailLike = "a%" };
+            var result = provider.GetBasicAsync(search).Result;
+            Assert.True(result.Count() > 0 && result.Count() < users.Count);
+
+            search.EmailLike = "b%";
+            result = provider.GetBasicAsync(search).Result;
+            Assert.True(result.Count() > 0 && result.Count() < users.Count);
+
+            search.EmailLike = "nothing";
+            result = provider.GetBasicAsync(search).Result;
+            Assert.Empty(result);
         }
     }
 }
