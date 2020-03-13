@@ -16,14 +16,15 @@ namespace Randomous.ContentSystem.test
         {
             var services = new ServiceCollection();
             var identifiers = new IdentifierKeys();
+            var keys = identifiers.GetKeys();
             var mapperConfig = new AutoMapper.MapperConfiguration((cfg) => 
             {
                 cfg.AddProfile<SearchProfile>();
-                cfg.AddProfile<ContentProfile>();
+                cfg.AddProfile<ContentProfile>(); //(new ContentProfile(keys));
             });
             services.AddLogging(configure => configure.AddSerilog(new LoggerConfiguration().WriteTo.File($"{GetType()}.txt").CreateLogger()));
             services.AddTransient<IEntityProvider, EntityProviderMemory>();
-            services.AddSingleton(identifiers.GetKeys());
+            services.AddSingleton(keys);
             services.AddSingleton(mapperConfig.CreateMapper());
             return services;
         }

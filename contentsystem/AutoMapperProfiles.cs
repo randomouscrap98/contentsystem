@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using AutoMapper;
 using Randomous.EntitySystem;
 
@@ -27,7 +29,7 @@ namespace Randomous.ContentSystem
 
     public class ContentProfile : Profile
     {
-        public ContentProfile()
+        public ContentProfile() //Dictionary<Enum, string> keys)
         {
             //Copy constructors essentially
             CreateMap<BasicUser, User>()

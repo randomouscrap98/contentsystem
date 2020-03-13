@@ -30,8 +30,7 @@ namespace Randomous.ContentSystem
         }
     }
 
-    public class BasicUser : BaseSystemObject
-    {
+    public class BasicUser : BaseSystemObject {
         public string username {get;set;}
 
         protected override bool EqualsSelf(object obj)
@@ -41,8 +40,7 @@ namespace Randomous.ContentSystem
         }
     }
 
-    public class User : BasicUser
-    {
+    public class User : BasicUser {
         public string email {get;set;}
         public string passwordHash {get;set;}
 
@@ -52,6 +50,34 @@ namespace Randomous.ContentSystem
             return base.EqualsSelf(obj) && email == other.email && passwordHash == other.passwordHash;
         }
     }
+
+    public class BasicContent : BaseSystemObject {
+        public string title {get;set;}
+        public string content {get;set;}
+
+        protected override bool EqualsSelf(object obj)
+        {
+            var other = (BasicContent)obj;
+            return base.EqualsSelf(obj) && title == other.title && content == other.content;
+        }
+    }
+
+    public class Content : BasicContent {
+        public long? parent {get;set;}
+        public long? owner {get;set;}
+
+        protected override bool EqualsSelf(object obj)
+        {
+            var other = (Content)obj;
+            return base.EqualsSelf(obj) && parent == other.parent && owner == other.owner;
+        }
+    }
+
+    //These are all separate in case they need extra fields. They may not but... idk.
+    public class BasicCategory : BasicContent {}
+    public class Category : Content {}
+    public class BasicComment : BasicContent {}
+    public class Comment : Content {}
 
     public class BasicPermission : BaseSystemObject
     {
