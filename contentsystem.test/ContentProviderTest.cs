@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Randomous.ContentSystem.test
 {
-    public class ContentProviderTest : BaseEntityProviderTest<Content, BasicContent, ContentProvider, ContentSearch> //UnitTestBase
+    public class ContentProviderTest : BaseEntityProviderTest<ContentProvider, Content, BasicContent, ContentSearch>
     {
         protected override string simpleField(BasicContent thing)
         {

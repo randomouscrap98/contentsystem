@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Randomous.ContentSystem.test
 {
-    public abstract class BaseEntityProviderTest<T,B,P,S>: UnitTestBase 
+    public abstract class BaseEntityProviderTest<P,T,B,S>: UnitTestBase 
         where T : BaseSystemObject, B where B : BaseSystemObject where S : BaseSearch, new() where P : IBasicProvider<T, B, S>
     {
         protected P provider;
@@ -20,7 +20,6 @@ namespace Randomous.ContentSystem.test
 
         public BaseEntityProviderTest()
         {
-            //provider = CreateService<ContentProvider>();
             mapper = CreateService<IMapper>();
         }
 
