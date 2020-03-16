@@ -22,6 +22,8 @@ namespace Randomous.ContentSystem
             CreateMap<EntitySearch, UserSearch>()
                 .ForMember(d => d.UsernameLike, o => o.MapFrom(s => s.NameLike))
                 .ReverseMap();
+            CreateMap<EntitySearch, ContentSearch>() //NameLike shows up in both
+                .ReverseMap();
             CreateMap<EntityRelationSearch, PermissionSearch>()
                 .ReverseMap();
         }

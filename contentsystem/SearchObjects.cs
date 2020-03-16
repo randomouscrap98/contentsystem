@@ -20,6 +20,13 @@ namespace Randomous.ContentSystem
         public string EmailLike = null; //This requires a value lookup first.
     }
 
+    public class ContentSearch : BaseSearch
+    {
+        public string NameLike = null;
+        public long Parent = 0;
+        public long Owner = 0;
+    }
+
     public class PermissionSearch : BaseSearch
     {
         public List<long> SubjectIds = new List<long>();

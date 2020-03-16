@@ -18,7 +18,8 @@ namespace Randomous.ContentSystem
         Permission,
         Parent,
         Email,
-        Password
+        Password,
+        Owner
     }
 
     public enum SystemType
@@ -36,18 +37,19 @@ namespace Randomous.ContentSystem
             return new Dictionary<Enum, string>()
             {
                 //"sa" for system action
-                { Action.Create,    "sa:c" },      //c for action create
-                { Action.Read,      "sa:r" },      //r for action read
-                { Action.Update,    "sa:u" },      //u for action update 
-                { Action.Delete,    "sa:d" },      //d for action delete
-                { Identifier.Permission,    "si:p" },   //p for permission
-                { Identifier.Parent,        "si:o" },   //o for owner
-                { Identifier.Email,         "si:e" },   //e for email
-                { Identifier.Password,      "si:s" },   //s for secret
-                { SystemType.User,      "st:u" },       //u for user
-                { SystemType.Comment,   "st:m" },       //m for message
-                { SystemType.Category,  "st:c" },       //c for category
-                { SystemType.Content,   "st:p" },       //p for post
+                { Action.Create,    "ac" },         //c for create
+                { Action.Read,      "ar" },         //r for read
+                { Action.Update,    "au" },         //u for update 
+                { Action.Delete,    "ad" },         //d for delete
+                { Identifier.Permission,    "ip" },     //p for permission
+                { Identifier.Parent,        "id" },     //d for daddy
+                { Identifier.Email,         "ie" },     //e for email
+                { Identifier.Password,      "is" },     //s for secret
+                { Identifier.Owner,         "io" },     //o for oWner
+                { SystemType.User,      "tu" },     //u for user
+                { SystemType.Comment,   "tm" },     //m for message
+                { SystemType.Category,  "tc" },     //c for category
+                { SystemType.Content,   "tp" },     //p for post
             };
         }
     }

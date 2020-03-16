@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Randomous.ContentSystem
 {
-    public interface IContentProvider<T,B,S> where T : BaseSystemObject where B : BaseSystemObject where S : BaseSearch
+    public interface IBasicProvider<T,B,S> where T : BaseSystemObject where B : BaseSystemObject where S : BaseSearch
     {
         Task<List<B>> GetBasicAsync(S search);
         Task WriteAsync(IEnumerable<T> items, bool writeIds = true);
@@ -21,6 +21,7 @@ namespace Randomous.ContentSystem
         //You'll probably need some kind of listen here... unless you want it per-provider.
     }
 
-    public interface IUserProvider : IContentProvider<User, BasicUser, UserSearch> { }
-    public interface IPermissionProvider : IContentProvider<BasicPermission, BasicPermission, PermissionSearch> { }
+    public interface IUserProvider : IBasicProvider<User, BasicUser, UserSearch> { }
+    public interface IContentProvider : IBasicProvider<Content, BasicContent, ContentSearch> { }
+    public interface IPermissionProvider : IBasicProvider<BasicPermission, BasicPermission, PermissionSearch> { }
 }
