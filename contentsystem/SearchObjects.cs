@@ -27,10 +27,29 @@ namespace Randomous.ContentSystem
         public long Owner = 0;
     }
 
-    public class PermissionSearch : BaseSearch
+    //These can be permissions, upvotes (!!), logging... but why give all this leeway?
+    public class RelationSearch : BaseSearch
     {
-        public List<long> SubjectIds = new List<long>();
-        public List<long> TargetIds = new List<long>();
-        public Action HasAny = Action.None; //Only include in search if there is an action
+        public string TypeLike = null;
+        public string ValueLike = null;
     }
+
+    //These can be keywords, extra fields in content (for like a page), etc.
+    public class ValueSearch : BaseSearch
+    {
+        //What will ID search look like? Is this literally a direct mapping to... the entity system?
+        //Just make sure you prepend something to the keys so they don't collide.
+        public string KeyLike = null;
+        public string ValueLike = null;
+    }
+
+    //public class CommentSearch : ContentSearch {}
+    //public class CategorySearch : ContentSearch {}
+
+    //public class PermissionSearch : BaseSearch
+    //{
+    //    public List<long> SubjectIds = new List<long>();
+    //    public List<long> TargetIds = new List<long>();
+    //    public Action HasAny = Action.None; //Only include in search if there is an action
+    //}
 }

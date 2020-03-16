@@ -73,22 +73,50 @@ namespace Randomous.ContentSystem
         }
     }
 
-    //These are all separate in case they need extra fields. They may not but... idk.
-    public class BasicCategory : BasicContent {}
-    public class Category : Content {}
-    public class BasicComment : BasicContent {}
-    public class Comment : Content {}
+    ////These are all separate in case they need extra fields. They may not but... idk.
+    //public class BasicCategory : BasicContent {}
+    //public class Category : Content {}
+    //public class BasicComment : BasicContent {}
+    //public class Comment : Content {}
 
-    public class BasicPermission : BaseSystemObject
+    //public class BasicPermission : BaseSystemObject
+    //{
+    //    long subject {get;set;}
+    //    long target {get;set;}
+    //    Action permissions {get;set;}
+
+    //    protected override bool EqualsSelf(object obj)
+    //    {
+    //        var other = (BasicPermission)obj;
+    //        return base.EqualsSelf(obj) && subject == other.subject && target == other.target && permissions == other.permissions;
+    //    }
+    //}
+
+    public class BasicRelation : BaseSystemObject
     {
         long subject {get;set;}
         long target {get;set;}
-        Action permissions {get;set;}
+        string type {get;set;}
+        string value {get;set;}
 
         protected override bool EqualsSelf(object obj)
         {
-            var other = (BasicPermission)obj;
-            return base.EqualsSelf(obj) && subject == other.subject && target == other.target && permissions == other.permissions;
+            var other = (BasicRelation)obj;
+            return base.EqualsSelf(obj) && subject == other.subject && target == other.target && 
+                value == other.value && type == other.type;
+        }
+    }
+
+    public class BasicValue : BaseSystemObject
+    {
+        public long entityId {get;set;}
+        public string key {get;set;}
+        public string value {get;set;}
+
+        protected override bool EqualsSelf(object obj)
+        {
+            var other = (BasicValue)obj;
+            return base.EqualsSelf(obj) && entityId == other.entityId && key == other.key && value == other.value;
         }
     }
 }

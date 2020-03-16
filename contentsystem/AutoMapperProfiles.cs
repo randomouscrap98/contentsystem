@@ -24,8 +24,8 @@ namespace Randomous.ContentSystem
                 .ReverseMap();
             CreateMap<EntitySearch, ContentSearch>() //NameLike shows up in both
                 .ReverseMap();
-            CreateMap<EntityRelationSearch, PermissionSearch>()
-                .ReverseMap();
+            //CreateMap<EntityRelationSearch, PermissionSearch>()
+            //    .ReverseMap();
         }
     }
 
@@ -38,10 +38,10 @@ namespace Randomous.ContentSystem
                 .ReverseMap();
             CreateMap<BasicContent, Content>()
                 .ReverseMap();
-            CreateMap<BasicCategory, Category>()
-                .ReverseMap();
-            CreateMap<BasicComment, Comment>()
-                .ReverseMap();
+            //CreateMap<BasicCategory, Category>()
+            //    .ReverseMap();
+            //CreateMap<BasicComment, Comment>()
+            //    .ReverseMap();
 
             CreateMap<Entity, BasicUser>()
                 .ForMember(d => d.username, o => o.MapFrom(s => s.name))

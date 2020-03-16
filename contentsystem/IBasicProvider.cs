@@ -23,5 +23,7 @@ namespace Randomous.ContentSystem
 
     public interface IUserProvider : IBasicProvider<User, BasicUser, UserSearch> { }
     public interface IContentProvider : IBasicProvider<Content, BasicContent, ContentSearch> { }
-    public interface IPermissionProvider : IBasicProvider<BasicPermission, BasicPermission, PermissionSearch> { }
+    //public interface IPermissionProvider : IBasicProvider<BasicPermission, BasicPermission, PermissionSearch> { }
+    public interface IRelationProvider : IBasicProvider<BasicRelation, BasicRelation, RelationSearch> { }
+    public interface IValueProvider : IBasicProvider<BasicValue, BasicValue, ValueSearch> { }
 }
