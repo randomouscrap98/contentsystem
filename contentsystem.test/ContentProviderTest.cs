@@ -39,10 +39,31 @@ namespace Randomous.ContentSystem.test
                 var content = MakeBasic();
                 content.name += (char)('a' + (i % 26));
                 content.content = (char)('a' + (i % 26)) + content.content;
+                content.owner = (i % 10) + 1;
+                content.parent = (i / 10) + 1;
                 contents.Add(content);
             }
 
             return contents;
+        }
+
+        [Fact]
+        public void SimpleNameSearch()
+        {
+            var users = MakeMany();
+            provider.WriteAsync(users).Wait();
+
+            var search = new ContentSearch() { NameLike = "%a" };
+            var result = provider.GetBasicAsync(search).Result;
+            Assert.True(result.Count() > 0 && result.Count() < users.Count);
+
+            search.NameLike = "%b";
+            result = provider.GetBasicAsync(search).Result;
+            Assert.True(result.Count() > 0 && result.Count() < users.Count);
+
+            search.NameLike = "nothing";
+            result = provider.GetBasicAsync(search).Result;
+            Assert.Empty(result);
         }
     }
 }
