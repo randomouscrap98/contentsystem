@@ -84,5 +84,11 @@ namespace Randomous.ContentSystem
         long subject {get;set;}
         long target {get;set;}
         Action permissions {get;set;}
+
+        protected override bool EqualsSelf(object obj)
+        {
+            var other = (BasicPermission)obj;
+            return base.EqualsSelf(obj) && subject == other.subject && target == other.target && permissions == other.permissions;
+        }
     }
 }

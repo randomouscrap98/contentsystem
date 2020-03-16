@@ -36,6 +36,12 @@ namespace Randomous.ContentSystem
             //Copy constructors essentially
             CreateMap<BasicUser, User>()
                 .ReverseMap();
+            CreateMap<BasicContent, Content>()
+                .ReverseMap();
+            CreateMap<BasicCategory, Category>()
+                .ReverseMap();
+            CreateMap<BasicComment, Comment>()
+                .ReverseMap();
 
             CreateMap<Entity, BasicUser>()
                 .ForMember(d => d.username, o => o.MapFrom(s => s.name))

@@ -217,6 +217,6 @@ namespace Randomous.ContentSystem
             };
         }
 
-        protected override SystemType EntityType { get => SystemType.User; }
+        protected override SystemType EntityType { get => SystemType.Content; }
     }
 }
