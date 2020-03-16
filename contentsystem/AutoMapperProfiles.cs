@@ -40,6 +40,8 @@ namespace Randomous.ContentSystem
             CreateMap<Entity, BasicUser>()
                 .ForMember(d => d.username, o => o.MapFrom(s => s.name))
                 .ReverseMap();
+            CreateMap<Entity, BasicContent>()
+                .ReverseMap();
         }
     }
 }

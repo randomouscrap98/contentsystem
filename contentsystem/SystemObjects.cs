@@ -52,13 +52,13 @@ namespace Randomous.ContentSystem
     }
 
     public class BasicContent : BaseSystemObject {
-        public string title {get;set;}
+        public string name {get;set;}
         public string content {get;set;}
 
         protected override bool EqualsSelf(object obj)
         {
             var other = (BasicContent)obj;
-            return base.EqualsSelf(obj) && title == other.title && content == other.content;
+            return base.EqualsSelf(obj) && name == other.name && content == other.content;
         }
     }
 
