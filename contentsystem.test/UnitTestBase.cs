@@ -43,6 +43,16 @@ namespace Randomous.ContentSystem.test
             Assert.NotNull(provider);
         }
 
+        [Fact]
+        public void AndedSearch()
+        {
+            var provider = CreateService<UserProvider>();
+            var list = new List<int> () { 1, 2, 3 };
+            Assert.True(provider.AndedSearch(list, new[] {1,2,3}).SequenceEqual(new[] {1,2,3}));
+            Assert.True(provider.AndedSearch(list, new[] {1,3}).SequenceEqual(new[] {1,3}));
+            Assert.True(provider.AndedSearch(list, new[] {2,5}).SequenceEqual(new[] {2}));
+        }
+
         protected void AssertResultsEqual<T>(IEnumerable<T> expected, IEnumerable<T> result)
         {
             Assert.Equal(expected.Count(), result.Count());

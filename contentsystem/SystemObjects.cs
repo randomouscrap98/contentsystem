@@ -63,8 +63,8 @@ namespace Randomous.ContentSystem
     }
 
     public class Content : BasicContent {
-        public long? parent {get;set;}
-        public long? owner {get;set;}
+        public long parent {get;set;}
+        public long owner {get;set;}
 
         protected override bool EqualsSelf(object obj)
         {

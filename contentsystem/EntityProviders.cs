@@ -16,30 +16,35 @@ namespace Randomous.ContentSystem
     /// <typeparam name="S"></typeparam>
     public abstract class BaseEntityProvider<T, B, S> : BaseProvider where T : BaseSystemObject where B : BaseSystemObject where S : BaseSearch
     {
-        public class EntityTransferData
+        public class SingleTransferDescriptor<V>
         {
-            public Action<T, string> Assign;
-            public Func<T, string> Retrieve;
-            public Func<S, string> FieldLike;
-        }
+            public Action<T, V> Assign;
+            public Func<T, V> Retrieve;
+            public Func<S, V> SearchRetrieve;
+        };
 
         public BaseEntityProvider(ILogger<BaseEntityProvider<T,B,S>> logger, IEntityProvider provider, IMapper mapper, Dictionary<Enum, string> keys) :
             base(logger, provider, mapper, keys) {}
         
-        protected Dictionary<Enum, EntityTransferData> TransferData {get;set;} = new Dictionary<Enum, EntityTransferData>();
+        protected Dictionary<Enum, SingleTransferDescriptor<string>> TransferValues {get;set;} = new Dictionary<Enum, SingleTransferDescriptor<string>>();
+        protected Dictionary<Enum, SingleTransferDescriptor<long>> TransferRelations {get;set;} = new Dictionary<Enum, SingleTransferDescriptor<long>>();
         protected abstract SystemType EntityType {get;}
         
         public async Task<List<T>> ExpandAsync(IEnumerable<B> items)
         {
             var result = new List<T>();
             var values = await GetSortedValues(items);
+            var relations = await GetSortedRelations(items);
 
             foreach(var item in items)
             {
                 var converted = mapper.Map<T>(item); //All T should have a mapping from/to entity
 
-                foreach(var transfer in TransferData)
+                foreach(var transfer in TransferValues)
                     transfer.Value.Assign(converted, GetValue(transfer.Key, values[item.id]).value);
+
+                foreach(var transfer in TransferRelations)
+                    transfer.Value.Assign(converted, GetRelation(transfer.Key, relations[item.id]).entityId1);
 
                 result.Add(converted);
             }
@@ -47,31 +52,49 @@ namespace Randomous.ContentSystem
             return result;
         }
 
+        public List<V> AndedSearch<V>(IEnumerable<V> original, IEnumerable<V> newThings)
+        {
+            if(original.Count() == 0)
+                return newThings.ToList();
+            else
+                return original.Intersect(newThings).ToList();
+        }
+
         public async Task<List<B>> GetBasicAsync(S search)
         {
             var entitySearch = mapper.Map<EntitySearch>(search);
             entitySearch.TypeLike = keys[EntityType];
 
-            var fieldItems = new List<EntityValue>();
-            bool fieldSearched = false;
+            List<long> searchIds = new List<long>();
 
-            foreach(var transfer in TransferData)
+            foreach(var transfer in TransferValues)
             {
-                var fieldSearch = transfer.Value.FieldLike(search);
+                var fieldSearch = transfer.Value.SearchRetrieve(search);
 
                 if(!string.IsNullOrEmpty(fieldSearch))
                 {
                     var valueSearch = new EntityValueSearch() { KeyLike = keys[transfer.Key], ValueLike = fieldSearch };
-                    fieldItems.AddRange(await provider.GetEntityValuesAsync(valueSearch));
-                    fieldSearched = true;
+                    searchIds = AndedSearch(searchIds, (await provider.GetEntityValuesAsync(valueSearch)).Select(x => x.entityId));
+                    if(searchIds.Count == 0)
+                        return new List<B>();
                 }
             }
 
-            //No need to search farther: there were no matching results. You can't increase the results; searching is "and"
-            if(fieldSearched && fieldItems.Count == 0)
-                return new List<B>();
+            foreach(var transfer in TransferRelations)
+            {
+                var fieldSearch = transfer.Value.SearchRetrieve(search);
 
-            entitySearch.Ids.AddRange(fieldItems.Select(x => x.entityId));
+                if(fieldSearch > 0)
+                {
+                    var relationSearch = new EntityRelationSearch() { TypeLike = keys[transfer.Key] };
+                    relationSearch.EntityIds1.Add(fieldSearch);
+                    searchIds = AndedSearch(searchIds, (await provider.GetEntityRelationsAsync(relationSearch)).Select(x => x.entityId2));
+                    if(searchIds.Count == 0)
+                        return new List<B>();
+                }
+            }
+
+            entitySearch.Ids.AddRange(searchIds);
 
             var results = await provider.GetEntitiesAsync(entitySearch);
             return results.Select(x => mapper.Map<B>(x)).ToList();
@@ -88,7 +111,7 @@ namespace Randomous.ContentSystem
                 entity.type = keys[EntityType];
                 var storeItem = Tuple.Create(item, entity, new List<EntityValue>());
 
-                foreach(var transfer in TransferData)
+                foreach(var transfer in TransferValues)
                 {
                     //Update values or add new ones as necessary
                     var value = GetValue(transfer.Key, values[item.id]);
@@ -121,17 +144,17 @@ namespace Randomous.ContentSystem
         public UserProvider(ILogger<UserProvider> logger, IEntityProvider provider, IMapper mapper, Dictionary<Enum, string> keys) : 
             base(logger, provider, mapper, keys) 
         { 
-            TransferData[Identifier.Email] = new EntityTransferData()
+            TransferValues[Identifier.Email] = new SingleTransferDescriptor<string>()
             {
                 Assign = (u, s) => u.email = s,
                 Retrieve = (u) => u.email,
-                FieldLike = (s) => s.EmailLike
+                SearchRetrieve = (s) => s.EmailLike
             };
-            TransferData[Identifier.Password] = new EntityTransferData()
+            TransferValues[Identifier.Password] = new SingleTransferDescriptor<string>()
             {
                 Assign = (u, s) => u.passwordHash = s,
                 Retrieve = (u) => u.passwordHash,
-                FieldLike = (s) => null
+                SearchRetrieve = (s) => null
             };
         }
 
